@@ -1,0 +1,33 @@
+name: Capture contribution graph
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          npm install puppeteer
+
+      - name: capture screenshot
+        run: |
+          mkdir -p assets
+          xvfb-run --auto-servernum node .github/scripts/capture.js
+
+      - name: update the contribution graph
+        run: |
+          git config --global user.name "Patrick Humpal (via GitHub Actions)"
+          git config --global user.email "654902+phumpal@users.noreply.github.com"
+          git add assets/contributions.png
+          git commit -m "Nightly actions update to contribution graph" || exit 0
+          git push
