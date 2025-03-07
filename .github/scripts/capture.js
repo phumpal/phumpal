@@ -20,6 +20,13 @@ const puppeteer = require('puppeteer');
   // Add extra wait time for dynamic rendering
   await new Promise(resolve => setTimeout(resolve, 5000));
 
+  await page.evaluate(() => {
+    const closeButton = document.querySelector('button[aria-label="Close"]');
+    if (closeButton) {
+      closeButton.remove();
+    }
+  });
+
   // Capture just the card with the contribution graph and profile info
   const element = await page.$("div.relative.p-4.sm\\:p-6");
   if (element) {
